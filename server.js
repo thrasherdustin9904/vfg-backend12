@@ -1,38 +1,47 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const cors = require('cors');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import cors from 'cors';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import mongoose from 'mongoose';
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(mongoSanitize());
 app.use(xss());
-
-const ALLOWED_ORIGIN = process.env.PUBLIC_URL || process.env.ALLOWED_ORIGIN || '*';
-app.use(cors({ origin: ALLOWED_ORIGIN }));
 app.use(helmet());
 
-const limiter = rateLimit({ windowMs: 1*60*1000, max: 200 });
+// CORS
+const ALLOWED_ORIGIN = process.env.PUBLIC_URL || process.env.ALLOWED_ORIGIN;
+app.use(cors({ origin: ALLOWED_ORIGIN }));
+
+// Rate Limit
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+});
 app.use(limiter);
 
-// Ensure uploads
-const uploads = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploads)) fs.mkdirSync(uploads);
+// MongoDB connect
+mongoose
+    .connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.error(err));
 
-// Routes (implemented in routes/)
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/admin', require('./routes/admin'));
-app.use('/api/products', require('./routes/products'));
+// Example route
+app.get("/", (req, res) => {
+    res.json({ message: "Backend running!" });
+});
 
-// Serve static
-app.use('/uploads', express.static(uploads));
-app.use('/', express.static(path.join(__dirname, 'public')));
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, ()=>console.log('Server running on port', PORT));
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
