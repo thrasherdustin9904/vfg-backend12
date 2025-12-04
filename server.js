@@ -11,7 +11,7 @@ import cors from 'cors';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import mongoose from 'mongoose';
-
+const uploadRoutes = require('./routes/uploadRoutes');
 const app = express();
 
 // Middleware
