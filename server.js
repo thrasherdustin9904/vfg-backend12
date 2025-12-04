@@ -21,8 +21,20 @@ app.use(xss());
 app.use(helmet());
 
 // CORS
-const ALLOWED_ORIGIN = process.env.PUBLIC_URL || process.env.ALLOWED_ORIGIN;
-app.use(cors({ origin: ALLOWED_ORIGIN }));
+const allowedOrigins = [
+  process.env.PUBLIC_URL,
+  "http://localhost:5173",                      // local dev
+  "https://vfg-frontend.onrender.com"          // render frontend
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("CORS blocked: " + origin));
+  }
+}));
 
 // Rate Limit
 const limiter = rateLimit({
