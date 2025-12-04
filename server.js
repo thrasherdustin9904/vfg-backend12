@@ -57,6 +57,8 @@ app.get("/", (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
+import settingsRoutes from "./routes/settingsRoutes.js";
+app.use("/api/admin/settings", settingsRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
