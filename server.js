@@ -1,6 +1,7 @@
+import settingsRoutes from "./routes/settingsRoutes.js";
+import paypalRoutes from "./routes/paypalRoutes.js";
 import dotenv from 'dotenv';
 dotenv.config();
-
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
