@@ -2,25 +2,6 @@ services:
   - type: web
     name: vfg-backend12
     env: node
-    repo: https://github.com/<your-username>/<your-repo>
-    branch: main
-    buildCommand: 'npm install'
-    startCommand: 'npm start'
-    plan: free
-    envVars:
-      - key: MONGODB_URI
-        scope: private
-      - key: JWT_SECRET
-        scope: private
-      - key: STRIPE_SECRET_KEY
-        scope: private
-      - key: STRIPE_WEBHOOK_SECRET
-        scope: private
-      - key: SENDGRID_API_KEY
-        scope: private
-      - key: EMAIL_FROM
-        scope: private
-      - key: PUBLIC_URL
-        scope: private
-      - key: ALLOWED_ORIGIN
-        scope: private
+    buildCommand: "npm install"
+    startCommand: "node src/server.js"
+    autoDeploy: true
